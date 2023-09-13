@@ -23,7 +23,7 @@ class UserDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //Bind button tap via rx
+        
         favoriteButton.rx.tap.bind {
             let favValue = self.userDetail.value.isFavorite
             favValue.accept(!favValue.value)

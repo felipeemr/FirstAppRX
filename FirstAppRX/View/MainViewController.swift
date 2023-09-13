@@ -30,7 +30,6 @@ class MainViewController: UIViewController {
     
     func bindUI() {
         
-        //Aqui subscrevemos o assunto em viewModel para obter o valor aqui
         userViewModelInstance.userViewModelObserver.subscribe(onNext: { (value) in
             self.filteredList.accept(value)
             self.userList.accept(value)
@@ -40,12 +39,10 @@ class MainViewController: UIViewController {
         
         tableView.tableFooterView = UIView()
         
-        //Isso vincula a fonte de dados da tabela ao tableview e também conecta a célula a ela.
         filteredList.bind(to: tableView.rx.items(cellIdentifier: "CellIdentifier", cellType: UserCell.self)) { row, model, cell in
             cell.configureCell(userdetail: model)
         }.disposed(by: bag)
         
-        //Substituição para didSelectRowAt() de funções de delegate da tableview
         tableView.rx.itemSelected.subscribe(onNext: { (indexPath) in
             self.tableView.deselectRow(at: indexPath, animated: true)
             self.controller?.userDetail.accept(self.filteredList.value[indexPath.row])
@@ -55,7 +52,6 @@ class MainViewController: UIViewController {
             self.navigationController?.pushViewController(self.controller ?? UserDetailViewController(), animated: true)
         }).disposed(by: bag)
         
-        //Funcionalidade de pesquisa: combina o modelo de dados completo ao campo de pesquisa e vincula os resultados ao modelo de dados vinculado ao tableview.
         Observable.combineLatest(userList.asObservable(),
                                  searchTextField.rx.text,
                                  resultSelector: { users, search in
@@ -66,7 +62,6 @@ class MainViewController: UIViewController {
             .disposed(by: bag)
     }
     
-    //Função de pesquisa
     func filterUserList(userModel: UserDetailModel, searchText: String?) -> Bool {
         if let search = searchText, !search.isEmpty, !(userModel.userData.first_name?.contains(search) ?? false) {
             return false
